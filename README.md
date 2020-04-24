@@ -2,6 +2,14 @@
 
 Simple app for tracking keeping up with friends and family
 
+## TODO
+
+Items to plan:
+
+- Flask Endpoints
+- HTML templates
+- Front-end design
+
 ## Database
 
 There are three tables which will be used:
@@ -34,3 +42,9 @@ There are three tables which will be used:
 |--|--|--|--|--|--|--|
 |`int`|`int`|`string`|`datetime`|`string`|`int`|`string`|
 |1|1|4|2020-04-22 16:23:03.134820|Duo|22|<ul><li>Played "Let it Go" on ukelele</li><li>next year will be first time working two years at same job</li></ul>|
+
+## API Endpoints
+
+### GET '/users/<user_id>'
+
+- Fetches the user specified and returns summary of ... ?
