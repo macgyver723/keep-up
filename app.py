@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify, render_template, render_template, url
 import json
 from six.moves.urllib.parse import urlencode
 
-# from models import setup_db, User, Contact, Interaction
+from models import setup_db, User, Contact, Interaction
 from auth import setup_auth, requires_auth, AUTH0_CLIENT_ID, AUTH0_CALLBACK_URL, AUTH0_CLIENT_SECRET
 
 app = Flask(__name__)
-# setup_db(app)
+setup_db(app)
 auth0 = setup_auth(app)
 
 @app.route('/')
