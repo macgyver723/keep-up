@@ -8,10 +8,11 @@ database_path = "postgresql://{}:{}@{}/{}".format("postgres", "postgres", "local
 
 db = SQLAlchemy()
 
+
 def setup_db(app, database_path=database_path):
     app.config['SQLALCHEMY_DATABASE_URI'] = database_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
+    db.app = app
     migrate = Migrate(app, db)
 
 class User(db.Model):
@@ -37,7 +38,7 @@ class Interaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.auth_id'), nullable=False)
     conact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
-    timestamp = db.Column(db.DateTme, nullable=False, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     method = db.Column(db.String(50), nullable=False)
     duration = db.Column(db.Integer, nullable=True)
     notes = db.Column(db.String())
