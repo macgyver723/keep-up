@@ -27,7 +27,7 @@ class User(db.Model):
 class Contact(db.Model):
     __tablename__ = 'contacts'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.auth_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     name = db.Column(db.String(180), nullable=False)
     last_contacted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     contact_frequency = db.Column(db.Integer, nullable=False, default=180)
@@ -36,7 +36,7 @@ class Contact(db.Model):
 class Interaction(db.Model):
     __tablename__ = 'interactions'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.auth_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     conact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     method = db.Column(db.String(50), nullable=False)
