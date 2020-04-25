@@ -22,10 +22,10 @@ There are three tables which will be used:
 
 ### users
 
-|id|email|full name|preferred name|creation date|
-|--|--|--|--|--|
-|`int`|`string` (unique)|`string`|`string`|`datetime`|
-|1|stefanbfritz@gmail.com|Stefan Fritz|Mac Daddy|2020-04-23 12:20:03.098832|
+|id|email|full name|creation date|
+|--|--|--|--|
+|`int`|`string` (unique)|`string`|`datetime`|
+|1|stefanbfritz@gmail.com|Stefan Fritz|2020-04-23 12:20:03.098832|
 
 
 ### contacts
