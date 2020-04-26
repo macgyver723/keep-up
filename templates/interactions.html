@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="title">
+    Interactions
+</h1>
+<h2 class="subtitle">
+  Keep up with your people
+</h2>
+<div class="container has-text-left">
+    <div class="box">
+        <div class="field">
+            <label class="label">Contact</label>
+            <input class="input" id="contact-input" type="text" placeholder="Name">
+        </div>
+        <div class="field">
+            <label class="label">Method</label>
+            <input class="input" id="method-input" type="text" placeholder="Text, Call, etc">
+        </div>
+        <div class="field">
+            <label class="label">Date</label>
+            <input class="input" id="date-input" type="date" placeholder="Leave blank if today">
+        </div>  
+        <div class="field">
+            <label class="label">Duration</label>
+            <input class="input" id="method-input" type="number" placeholder="How many mintues?">
+        </div>
+        <div class="field">
+            <label class="label">Notes</label>
+            <textarea id="notes-input" class="textarea" plceholder="I should remember..."></textarea>
+        </div>
+    </div>
+</div>    
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+    const contactInput = document.getElementById('contact-input')
+    contactInput.onchange = function(e) {
+        console.log("contact input changed")
+        console.log(e)
+    }
+</script>
+{% endblock %}
