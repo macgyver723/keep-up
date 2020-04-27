@@ -35,19 +35,22 @@
 
 {% block javascript %}
 <script>
-    const title = document.getElementById('header-name').getAttribute('data')
-    console.log(title)
-    // const contacts_names = fetch(
-    //     '/users/' + userId + '/contacts', {
-    //         method : 'GET'
-    //     }
-    // )
-    // .then(response => response.json())
-    // .then(jsonResponse => {
-    //     console.log(jsonResponse);
-    // })
+    const userId = document.getElementById('header-name').getAttribute('data')
+    const contacts_names = fetch(
+        '/users/' + userId + '/contacts', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    .then(response => {
+        console.log(response)
+        return response.json()})
+    .then(jsonResponse => {
+        console.log(jsonResponse);
+    })
 
-    // console.log(contacts_names)
+    console.log(contacts_names)
 
     const contactInput = document.getElementById('contact-input')
     contactInput.oninput = function(e) {

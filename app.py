@@ -95,23 +95,17 @@ def interactions():
         print("\tuser is none")
         print(f"\tcreated user: {user}")
         user.insert()
-
-    # contacts_list = Contact. \
-    #     query. \
-    #     filter(Contact.user_id==user.id). \
-    #     order_by(Contact.name). \
-    #     all()
     
-    # contacts_names = [c.name for c in contacts_list]
+    ## TODO put actual list of interactions here and pass to template
 
     return render_template('interactions.html', user_id=user.id)
 
 
-## this route is for a potential AJAX request
+## AJAX request
 @app.route('/users/<int:user_id>/contacts')
 @requires_auth
 def get_contacts_by_user(user_id):
-    user = User.query.get(user_id).one_or_none()
+    user = User.query.get(user_id)
     if user is None:
         abort(404)
 
@@ -128,3 +122,7 @@ def get_contacts_by_user(user_id):
         "success": True,
         "contacts_names": contacts_names
     })
+
+# @app.route('/contacts', methods=['POST'])
+# def add_contact():
+#     body = request.get_json()
