@@ -116,14 +116,13 @@ def get_contacts_by_user(user_id):
         all()
     
     contacts_names = [c.name for c in contacts_list]
+
     # TODO: make a format() method for the contacts to turn into a json obj for return statement
 
     return jsonify({
         "success": True,
         "contactsNames": contacts_names
     })
-
-# TODO: add post functionality to interactions.html
 
 @app.route('/contacts', methods=['POST'])
 @requires_auth
@@ -145,3 +144,8 @@ def add_contact():
         "newContact": new_contact.id
     })
 
+# TODO: finish post Interaction
+@app.route('/interactions', methods=['POST'])
+@requires_auth
+def add_interaction():
+    body = request.get_json()

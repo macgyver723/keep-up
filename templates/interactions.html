@@ -12,6 +12,7 @@
             <label class="label">Contact</label>
             <div class="field is-horizontal">
                 <input class="input" id="contact-input" type="text" placeholder="Name">
+                <input type="button" id='contact-match-button' class="button is-primary hidden">
                 <input class="input hidden" id="contact-frequency" type="number" placeholder="Contact Frequency (days)">
                 <button id='add-button' class="button is-warning hidden">Add</button>
             </div>
@@ -32,6 +33,9 @@
             <label class="label">Notes</label>
             <textarea id="notes-input" class="textarea" plceholder="I should remember..."></textarea>
         </div>
+        <div class="field">
+            <input id='submit-interaction-btn' class="button is-primary" type="submit">
+        </div>
     </div>
 </div>    
 
@@ -39,52 +43,66 @@
 
 {% block javascript %}
 <script>
-    const userId = document.getElementById('header-name').getAttribute('data')
-    let contactsNames = []
-    fetch(
-        '/users/' + userId + '/contacts', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+    updateContactNames = function() {
+        fetch(
+            '/users/' + userId + '/contacts', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+        .then(response => response.json())
+        .then(jsonResponse => {
+            contactsNames = jsonResponse['contactsNames']
+            console.log(jsonResponse);
+            console.log("contactsNames: " + contactsNames)
         })
-    .then(response => response.json())
-    .then(jsonResponse => {
-        contactsNames = jsonResponse['contactsName']
-        console.log(jsonResponse);
-    })
+    }
 
-    console.log("contactsNames: " + contactsNames)
+    const userId = document.getElementById('header-name').getAttribute('data')
+    var contactsNames = []
+    var possibleName = "";
 
-    let contactInputValue = "";
+    var contactInputValue = "";
     const contactInputElement = document.getElementById('contact-input')
     const addContactButton = document.getElementById('add-button')
+    const contactMatchButton = document.getElementById('contact-match-button')
     const contactFrequencyInput = document.getElementById('contact-frequency')
+    const submitInteractionButton = document.getElementById('submit-interaction-button')
+
+    updateContactNames()
 
     contactInputElement.oninput = function(e) {
         contactInputValue = e.target.value;
         console.log(contactInputValue)
         // get first match in contacts with contactInputValue beginning
         try {
-            let possibleName = contactsNames.filter(
+            possibleName = contactsNames.filter(
             name => name.toLowerCase().substring(0,contactInputValue.length) == contactInputValue.toLowerCase()
             )[0]
 
             console.log("possibleName: " + possibleName)
-            // contactInputElement.setAttribute()
         }
         
         catch(err) {
             console.log("Error finding possibleName: " + err)
         }
         
-        if (typeof possibleName === "undefined" && contactInputValue.length != 0) {
+        if (contactInputValue.length == 0) {
+            addContactButton.classList.add('hidden')
+            contactFrequencyInput.classList.add('hidden')
+            contactMatchButton.classList.add('hidden')
+        }
+        else if (typeof possibleName === "undefined" && contactInputValue.length != 0) {
             addContactButton.classList.remove('hidden')
             contactFrequencyInput.classList.remove('hidden')
+            contactMatchButton.classList.add('hidden')
         }
         else {
             addContactButton.classList.add('hidden')
             contactFrequencyInput.classList.add('hidden')
+            contactMatchButton.classList.remove('hidden')
+            contactMatchButton.value = possibleName
         }
     }
 
@@ -105,13 +123,17 @@
             )
             .then(response => response.json())
             .then(jsonResponse => console.log(jsonResponse))
+            .then(updateContactNames())
         }
     }
-    
+    contactMatchButton.onclick = function(e) {
+        contactInputElement.value = possibleName;
+    }
+    submitInteractionButton.onclick = function(e) {
+        // TODO setup this fetch request
+    }
 
 
-    // TODO put new contact functionality in
-    // if new contact isn't in the contacts_names list, then add "Add" button
 
 </script>
 {% endblock %}
