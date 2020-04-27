@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="title">
-    Interactions
+<h1 id='header-name' data='{{ user_id }}' class="title">
+    {{ session['profile']['given_name'] }}'s Interactions
 </h1>
 <h2 class="subtitle">
   Keep up with your people
@@ -35,8 +35,22 @@
 
 {% block javascript %}
 <script>
+    const title = document.getElementById('header-name').getAttribute('data')
+    console.log(title)
+    // const contacts_names = fetch(
+    //     '/users/' + userId + '/contacts', {
+    //         method : 'GET'
+    //     }
+    // )
+    // .then(response => response.json())
+    // .then(jsonResponse => {
+    //     console.log(jsonResponse);
+    // })
+
+    // console.log(contacts_names)
+
     const contactInput = document.getElementById('contact-input')
-    contactInput.onchange = function(e) {
+    contactInput.oninput = function(e) {
         console.log("contact input changed")
         console.log(e)
     }

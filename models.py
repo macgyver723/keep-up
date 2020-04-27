@@ -13,6 +13,7 @@ def setup_db(app, database_path=database_path):
     app.config['SQLALCHEMY_DATABASE_URI'] = database_path
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
+    db.init_app(app)
     migrate = Migrate(app, db)
 
 class User(db.Model):
@@ -23,6 +24,13 @@ class User(db.Model):
     creation_date = db.Column(db.DateTime, default=datetime.utcnow)
     contacts = db.relationship('Contact', backref='user', lazy=True, cascade='all, delete-orphan')
     interactions = db.relationship('Interaction', backref='user', lazy=True, cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f"<User {self.id} {self.full_name} {self.email} {self.creation_date}>"
+    
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
 
 class Contact(db.Model):
     __tablename__ = 'contacts'

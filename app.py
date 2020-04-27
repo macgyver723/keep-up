@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, render_template, url_for, session, redirect
+from flask import Flask, request, jsonify, render_template, render_template, url_for, session, redirect, abort
 import json
 from six.moves.urllib.parse import urlencode
 
@@ -11,6 +11,9 @@ auth0 = setup_auth(app)
 
 @app.route('/')
 def index():
+    if session and 'profile' in session:
+        print(f"session['profile']: {session['profile']}")
+        return redirect(url_for('interactions'))
     return render_template('index.html')
 
 @app.route('/login')
@@ -60,15 +63,11 @@ def callback_handling():
     session['profile'] = {
         'user_id': userinfo['sub'],
         'name': userinfo['name'],
+        'given_name': userinfo['given_name'],
         'picture': userinfo['picture'],
         'email': userinfo['email']
     }
-    # return jsonify({
-    #     "success": True,
-    #     "profile": jsonify(session['profile'])
-    # })
-    
-    # return redirect('/dashboard')
+
     return redirect(url_for('interactions'))
 
 @app.route('/dashboard')
@@ -89,4 +88,43 @@ def logout():
 @app.route('/interactions')
 @requires_auth
 def interactions():
-    return render_template('interactions.html')
+    # check if user is in db
+    user = User.query.filter(User.email==session['profile']['email']).one_or_none()
+    if user is None:
+        user = User(email=session['profile']['email'], full_name=session['profile']['name'])
+        print("\tuser is none")
+        print(f"\tcreated user: {user}")
+        user.insert()
+
+    # contacts_list = Contact. \
+    #     query. \
+    #     filter(Contact.user_id==user.id). \
+    #     order_by(Contact.name). \
+    #     all()
+    
+    # contacts_names = [c.name for c in contacts_list]
+
+    return render_template('interactions.html', user_id=user.id)
+
+
+## this route is for a potential AJAX request
+@app.route('/users/<int:user_id>/contacts')
+@requires_auth
+def get_contacts_by_user(user_id):
+    user = User.query.get(user_id).one_or_none()
+    if user is None:
+        abort(404)
+
+    contacts_list = Contact. \
+        query. \
+        filter(Contact.user_id==user.id). \
+        order_by(Contact.name). \
+        all()
+    
+    contacts_names = [c.name for c in contacts_list]
+    # TODO: make a format() method for the contacts to turn into a json obj for return statement
+
+    return jsonify({
+        "success": True,
+        "contacts_names": contacts_names
+    })
