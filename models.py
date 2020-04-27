@@ -8,6 +8,11 @@ database_path = "postgresql://{}:{}@{}/{}".format("postgres", "postgres", "local
 
 db = SQLAlchemy()
 
+class DatabaseItem():
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 def setup_db(app, database_path=database_path):
     app.config['SQLALCHEMY_DATABASE_URI'] = database_path
@@ -16,7 +21,7 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     migrate = Migrate(app, db)
 
-class User(db.Model):
+class User(db.Model, DatabaseItem):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
@@ -27,10 +32,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.id} {self.full_name} {self.email} {self.creation_date}>"
-    
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
 
 class Contact(db.Model):
     __tablename__ = 'contacts'
