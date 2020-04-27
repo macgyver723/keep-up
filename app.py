@@ -92,9 +92,9 @@ def interactions():
     user = User.query.filter(User.email==session['profile']['email']).one_or_none()
     if user is None:
         user = User(email=session['profile']['email'], full_name=session['profile']['name'])
+        user.insert()
         print("\tuser is none")
         print(f"\tcreated user: {user}")
-        user.insert()
     
     ## TODO put actual list of interactions here and pass to template
 
@@ -120,9 +120,28 @@ def get_contacts_by_user(user_id):
 
     return jsonify({
         "success": True,
-        "contacts_names": contacts_names
+        "contactsNames": contacts_names
     })
 
-# @app.route('/contacts', methods=['POST'])
-# def add_contact():
-#     body = request.get_json()
+# TODO: add post functionality to interactions.html
+
+@app.route('/contacts', methods=['POST'])
+@requires_auth
+def add_contact():
+    body = request.get_json()
+    user_id = body['userId']
+    contact_name = body['contactName']
+    contact_frequency = body['contactFrequency']
+
+    new_contact = Contact(
+        user_id=user_id,
+        name=contact_name.title(), # check how to make title case
+        contact_frequency=contact_frequency
+        )
+    new_contact.insert()
+
+    return jsonify({
+        "success": True,
+        "newContact": new_contact.id
+    })
+

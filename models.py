@@ -33,7 +33,7 @@ class User(db.Model, DatabaseItem):
     def __repr__(self):
         return f"<User {self.id} {self.full_name} {self.email} {self.creation_date}>"
 
-class Contact(db.Model):
+class Contact(db.Model, DatabaseItem):
     __tablename__ = 'contacts'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -42,7 +42,7 @@ class Contact(db.Model):
     contact_frequency = db.Column(db.Integer, nullable=False, default=180)
     interactions = db.relationship('Interaction', backref='contact', lazy=True, cascade='all, delete-orphan')
 
-class Interaction(db.Model):
+class Interaction(db.Model, DatabaseItem):
     __tablename__ = 'interactions'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
