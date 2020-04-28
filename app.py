@@ -9,11 +9,25 @@ app = Flask(__name__)
 setup_db(app)
 auth0 = setup_auth(app)
 
+'''
+Helper function
+'''
+def delete_all_from_tables():
+    delete_interactions()
+    delete_contacts()
+    delete_users()
+
+def delete_interactions():
+    [i.delete() for i in Interaction.query.all()]
+
+def delete_contacts():
+    [c.delete() for c in Contact.query.all()]
+
+def delete_users():
+    [u.delete() for u in User.query.all()]
+
 @app.route('/')
 def index():
-    if session and 'profile' in session:
-        print(f"session['profile']: {session['profile']}")
-        return redirect(url_for('interactions'))
     return render_template('index.html')
 
 @app.route('/login')
@@ -68,7 +82,15 @@ def callback_handling():
         'email': userinfo['email']
     }
 
-    return redirect(url_for('interactions'))
+    # check if user is in db
+    user = User.query.filter(User.email==session['profile']['email']).one_or_none()
+    if user is None:
+        user = User(email=session['profile']['email'], full_name=session['profile']['name'])
+        user.insert()
+        print("\tuser is none")
+        print(f"\tcreated user: {user}")
+
+    return redirect(url_for('interactions', userId=user.id))
 
 @app.route('/dashboard')
 @requires_auth
@@ -88,17 +110,30 @@ def logout():
 @app.route('/interactions')
 @requires_auth
 def interactions():
-    # check if user is in db
-    user = User.query.filter(User.email==session['profile']['email']).one_or_none()
-    if user is None:
-        user = User(email=session['profile']['email'], full_name=session['profile']['name'])
-        user.insert()
-        print("\tuser is none")
-        print(f"\tcreated user: {user}")
-    
+    user_id = request.args.get('userId', None)
+    if user_id is None:
+        user = User.query.filter_by(email=session['profile']['email']).first()
+        user_id = user.id
     ## TODO put actual list of interactions here and pass to template
 
-    return render_template('interactions.html', user_id=user.id)
+    user_contacts = Contact.query.filter(Contact.user_id==user_id).all()
+    contacts_dicts = {}
+    for c in user_contacts:
+        contacts_dicts[c.id] = c.name
+    print(f"contacts_dicts: {contacts_dicts}")
+
+    interactions = Interaction.query.filter(
+        Interaction.user_id==user.id
+        ).order_by(Interaction.timestamp).all()
+
+    '''
+    contact_id   -->  contact.id --> contact.name
+    '''
+    return render_template(
+        'interactions.html', 
+        user_id=user_id,
+        interactions=[i.format() for i in interactions],
+        contacts=contacts_dicts)
 
 
 ## AJAX request
@@ -145,7 +180,6 @@ def add_contact(user_id):
         "newContact": new_contact.id
     })
 
-# TODO: finish post Interaction
 @app.route('/interactions/<int:user_id>', methods=['POST'])
 @requires_auth
 def add_interaction(user_id):
@@ -158,6 +192,7 @@ def add_interaction(user_id):
     success = False
     
     try:
+        ## TODO: what if you know two people with same name??
         contact = Contact.query.filter_by(name=contact_name).one_or_none()
         if contact is None:
             abort(404)
@@ -179,5 +214,5 @@ def add_interaction(user_id):
 
     return jsonify({
         "success" : True,
-        "newInteraction" : interaction.id
+        "newInteraction" : interaction.format()
     })

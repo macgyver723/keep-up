@@ -41,7 +41,35 @@
         </div>
     </div>
 </div>    
-
+{% if interactions %}
+<div class="section">
+    <div class="box">
+        <table class="table is-striped is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Method</th>
+                    <th>Duration</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody id="interactions-tbody">
+                {% for interaction in interactions %}
+                <tr>
+                    <td>{{ interaction['timestamp'].split(' ')[0] }}</td>
+                    <td>{{ contacts[interaction['contact_id']] }}</td>
+                    <td>{{ interaction['method'] }}</td>
+                    <td>{{ interaction['duration'] }}</td>
+                    <td>{{ interaction['notes'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block javascript %}
@@ -172,6 +200,7 @@
             addInteractionContainer.classList.add('hidden')
             addInteractionButton.classList.remove('hidden')
         })
+        // TODO: update the view with new interaction
     }
 
 
