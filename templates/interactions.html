@@ -6,7 +6,10 @@
 <h2 class="subtitle">
   Keep up with your people
 </h2>
-<div class="container has-text-left">
+<div class="container">
+    <button id="add-interaction-btn" class='button'>&plus;</button>
+</div>
+<div id='add-interaction-container' class="container has-text-left hidden">
     <div class="box">
         <div class="field">
             <label class="label">Contact</label>
@@ -58,6 +61,17 @@
             console.log("contactsNames: " + contactsNames)
         })
     }
+    setAddContactVisibility = function(visible) {
+        if (visible) {
+            addContactButton.classList.remove('hidden')
+            contactFrequencyInput.classList.remove('hidden')
+            contactMatchButton.classList.add('hidden')
+        }
+        else {
+            addContactButton.classList.add('hidden')
+            contactFrequencyInput.classList.add('hidden')
+        }
+    }
 
     const userId = document.getElementById('header-name').getAttribute('data')
     var contactsNames = []
@@ -69,9 +83,15 @@
     const contactMatchButton = document.getElementById('contact-match-button')
     const contactFrequencyInput = document.getElementById('contact-frequency')
     const submitInteractionButton = document.getElementById('submit-interaction-btn')
+    const addInteractionButton = document.getElementById('add-interaction-btn')
+    const addInteractionContainer = document.getElementById('add-interaction-container')
 
     updateContactNames()
 
+    addInteractionButton.onclick = function(e) {
+        addInteractionContainer.classList.remove('hidden')
+        addInteractionButton.classList.add('hidden')
+    }
     contactInputElement.oninput = function(e) {
         contactInputValue = e.target.value;
         // console.log(contactInputValue)
@@ -89,18 +109,14 @@
         }
         
         if (contactInputValue.length == 0) {
-            addContactButton.classList.add('hidden')
-            contactFrequencyInput.classList.add('hidden')
+            setAddContactVisibility(false)
             contactMatchButton.classList.add('hidden')
         }
         else if (typeof possibleName === "undefined" && contactInputValue.length != 0) {
-            addContactButton.classList.remove('hidden')
-            contactFrequencyInput.classList.remove('hidden')
-            contactMatchButton.classList.add('hidden')
+            setAddContactVisibility(true)
         }
         else {
-            addContactButton.classList.add('hidden')
-            contactFrequencyInput.classList.add('hidden')
+            setAddContactVisibility(false)
             contactMatchButton.classList.remove('hidden')
             contactMatchButton.value = possibleName
         }
@@ -123,7 +139,10 @@
             )
             .then(response => response.json())
             .then(jsonResponse => console.log(jsonResponse))
-            .then(updateContactNames())
+            .then( () => {
+                updateContactNames()
+                setAddContactVisibility(false)
+            })
         }
     }
     contactMatchButton.onclick = function(e) {
@@ -149,6 +168,10 @@
         )
         .then(response => response.json())
         .then(jsonResponse => console.log(jsonResponse))
+        .then( () => {
+            addInteractionContainer.classList.add('hidden')
+            addInteractionButton.classList.remove('hidden')
+        })
     }
 
 
