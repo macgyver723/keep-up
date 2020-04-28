@@ -155,7 +155,8 @@ def add_interaction(user_id):
     method = body['contactMethod']
     duration = body['duration']
     notes = body['notes']
-
+    success = False
+    
     try:
         contact = Contact.query.filter_by(name=contact_name).one_or_none()
         if contact is None:
@@ -168,11 +169,14 @@ def add_interaction(user_id):
             duration=duration,
             notes=notes 
             )
-        print(f"\n\tNew interactions {interaction}")
+        
         interaction.insert()
+        contact.last_contacted = interaction.timestamp
+        contact.update()
+
     except Exception as e:
         print(f"Exception in add_interactions: {e}")
-    
+
     return jsonify({
         "success" : True,
         "newInteraction" : interaction.id
