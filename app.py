@@ -124,11 +124,12 @@ def get_contacts_by_user(user_id):
         "contactsNames": contacts_names
     })
 
-@app.route('/contacts', methods=['POST'])
+@app.route('/contacts/<int:user_id>', methods=['POST'])
 @requires_auth
-def add_contact():
+def add_contact(user_id):
     body = request.get_json()
-    user_id = body['userId']
+    # print(f"\n\tbody: {body}")
+
     contact_name = body['contactName']
     contact_frequency = body['contactFrequency']
 
@@ -145,7 +146,34 @@ def add_contact():
     })
 
 # TODO: finish post Interaction
-@app.route('/interactions', methods=['POST'])
+@app.route('/interactions/<int:user_id>', methods=['POST'])
 @requires_auth
-def add_interaction():
+def add_interaction(user_id):
     body = request.get_json()
+    print(f"\n\tbody: {body}")
+    contact_name = body['contactName']
+    method = body['contactMethod']
+    duration = body['duration']
+    notes = body['notes']
+
+    try:
+        contact = Contact.query.filter_by(name=contact_name).one_or_none()
+        if contact is None:
+            abort(404)
+        print(f"contact found: {contact}")
+        interaction = Interaction(
+            user_id=user_id, 
+            contact_id=contact.id,
+            method=method,
+            duration=duration,
+            notes=notes 
+            )
+        print(f"\n\tNew interactions {interaction}")
+        interaction.insert()
+    except Exception as e:
+        print(f"Exception in add_interactions: {e}")
+    
+    return jsonify({
+        "success" : True,
+        "newInteraction" : interaction.id
+    })
