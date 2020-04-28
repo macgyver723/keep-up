@@ -42,12 +42,18 @@ class Contact(db.Model, DatabaseItem):
     contact_frequency = db.Column(db.Integer, nullable=False, default=180)
     interactions = db.relationship('Interaction', backref='contact', lazy=True, cascade='all, delete-orphan')
 
+    def __repr__(self):
+        return f"<Contact {self.id} {self.name} {self.last_contacted} {self.contact_frequency}>"
+
 class Interaction(db.Model, DatabaseItem):
     __tablename__ = 'interactions'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    conact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contacts.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     method = db.Column(db.String(50), nullable=False)
     duration = db.Column(db.Integer, nullable=True)
     notes = db.Column(db.String())
+
+    def __repr__(self):
+        return f"<Interaction {self.id}>"
