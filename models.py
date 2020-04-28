@@ -12,6 +12,9 @@ class DatabaseItem():
     def insert(self):
         db.session.add(self)
         db.session.commit()
+    
+    def update(self):
+        db.session.commit()
 
 
 def setup_db(app, database_path=database_path):
@@ -45,6 +48,15 @@ class Contact(db.Model, DatabaseItem):
     def __repr__(self):
         return f"<Contact {self.id} {self.name} {self.last_contacted} {self.contact_frequency}>"
 
+        def format(self):
+            return {
+                'id': self.id,
+                'name': self.name,
+                'last_contacted': str(self.last_contacted),
+                'contact_frequency': self.contact_frequency
+
+            }
+
 class Interaction(db.Model, DatabaseItem):
     __tablename__ = 'interactions'
     id = db.Column(db.Integer, primary_key=True)
@@ -57,3 +69,13 @@ class Interaction(db.Model, DatabaseItem):
 
     def __repr__(self):
         return f"<Interaction {self.id}>"
+    
+    def format(self):
+        return {
+            'id' : self.id,
+            'contact_id': self.contact_id,
+            'timestamp': str(self.timestamp),
+            'method': self.method,
+            'durations': self.duration,
+            'notes': self.notes
+        }
